@@ -18,6 +18,17 @@ export const INITIAL_USER: UserProfile = {
   maxLoanLimit: 5000,
   pin: '1234',
   preferredMoMo: 'mtn',
+  bankAccounts: [
+    {
+      id: 'bnk_01',
+      bankName: 'Ecobank Ghana Ltd',
+      accountNumber: '1441002938491',
+      accountHolder: 'Kwame Asante Mensah',
+      isPrimary: true,
+      branch: 'Accra Main Branch',
+      dateAdded: '15 Aug 2026',
+    },
+  ],
 };
 
 export const INITIAL_BALANCES: WalletBalances = {

@@ -17,12 +17,16 @@ import { BOG_REGULATION_INFO } from '../constants/ghana';
 interface ProfileScreenProps {
   user: UserProfile;
   onOpenKycModal: () => void;
+  onOpenAddBankModal: () => void;
   onUpdateUser: (user: UserProfile) => void;
+  onLogout: () => void;
 }
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   user,
   onOpenKycModal,
+  onOpenAddBankModal,
+  onLogout,
 }) => {
   const [biometricsEnabled, setBiometricsEnabled] = useState(true);
   const [smsAlerts, setSmsAlerts] = useState(true);
@@ -94,6 +98,52 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               <Text style={styles.rowSubtitle}>Tier {user.kycLevel} (Max GH₵ {user.maxLoanLimit.toLocaleString()})</Text>
             </View>
           </View>
+        </View>
+      </View>
+
+      {/* Linked Bank Accounts */}
+      <View style={styles.section}>
+        <View style={styles.sectionTitleRow}>
+          <Text style={styles.sectionTitle}>Linked Bank Accounts (GhIPSS)</Text>
+          <TouchableOpacity onPress={onOpenAddBankModal} activeOpacity={0.7}>
+            <Text style={styles.linkAddText}>+ Link Bank</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={[styles.card, SHADOWS.sm]}>
+          {user.bankAccounts && user.bankAccounts.length > 0 ? (
+            user.bankAccounts.map((bank, idx) => (
+              <React.Fragment key={bank.id}>
+                <View style={styles.bankRowItem}>
+                  <View style={[styles.iconCircle, { backgroundColor: '#E0F2FE' }]}>
+                    <Ionicons name="business" size={18} color="#0369A1" />
+                  </View>
+                  <View style={styles.rowText}>
+                    <View style={styles.bankNameBadgeRow}>
+                      <Text style={styles.rowTitle}>{bank.bankName}</Text>
+                      {bank.isPrimary && (
+                        <View style={styles.primaryBadge}>
+                          <Text style={styles.primaryBadgeText}>Primary</Text>
+                        </View>
+                      )}
+                    </View>
+                    <Text style={styles.rowSubtitle}>
+                      •••• {bank.accountNumber.slice(-4)} • {bank.branch || 'Accra'}
+                    </Text>
+                  </View>
+                </View>
+                {idx < (user.bankAccounts?.length || 0) - 1 && <View style={styles.divider} />}
+              </React.Fragment>
+            ))
+          ) : (
+            <View style={styles.emptyBankBox}>
+              <Ionicons name="card-outline" size={24} color={COLORS.textMuted} />
+              <Text style={styles.emptyBankText}>No commercial bank account linked yet</Text>
+              <TouchableOpacity style={styles.addBankBtn} onPress={onOpenAddBankModal} activeOpacity={0.8}>
+                <Text style={styles.addBankBtnText}>Link Ghana Bank Account</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
 
@@ -202,6 +252,27 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             <Ionicons name="chevron-forward" size={18} color={COLORS.textMuted} />
           </TouchableOpacity>
         </View>
+      </View>
+
+      {/* Log Out / Switch Account */}
+      <View style={styles.section}>
+        <TouchableOpacity
+          style={styles.logoutBtn}
+          onPress={() => {
+            Alert.alert(
+              'Log Out',
+              'Are you sure you want to sign out? You will be returned to the account registration screen.',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Log Out', style: 'destructive', onPress: onLogout },
+              ]
+            );
+          }}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="log-out-outline" size={18} color={COLORS.danger} />
+          <Text style={styles.logoutBtnText}>Log Out / Switch Account</Text>
+        </TouchableOpacity>
       </View>
 
       {/* App Version */}
@@ -379,6 +450,75 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: COLORS.primary,
+  },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  linkAddText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: COLORS.primary,
+  },
+  bankRowItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+  },
+  bankNameBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  primaryBadge: {
+    backgroundColor: COLORS.primaryLight,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  primaryBadgeText: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: COLORS.primaryDark,
+  },
+  emptyBankBox: {
+    paddingVertical: 20,
+    alignItems: 'center',
+    gap: 8,
+  },
+  emptyBankText: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+  },
+  addBankBtn: {
+    backgroundColor: COLORS.primaryLight,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginTop: 4,
+  },
+  addBankBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: COLORS.primary,
+  },
+  logoutBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#FEE2E2',
+    borderWidth: 1,
+    borderColor: '#FECACA',
+    borderRadius: 14,
+    paddingVertical: 14,
+  },
+  logoutBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: COLORS.danger,
   },
   divider: {
     height: 1,

@@ -11,6 +11,16 @@ export interface MoMoProviderInfo {
   tagline: string;
 }
 
+export interface BankAccount {
+  id: string;
+  bankName: string;
+  accountNumber: string;
+  accountHolder: string;
+  isPrimary: boolean;
+  branch?: string;
+  dateAdded: string;
+}
+
 export interface UserProfile {
   id: string;
   fullName: string;
@@ -23,6 +33,7 @@ export interface UserProfile {
   maxLoanLimit: number;
   pin: string;
   preferredMoMo: MoMoNetwork;
+  bankAccounts?: BankAccount[];
 }
 
 export interface WalletBalances {

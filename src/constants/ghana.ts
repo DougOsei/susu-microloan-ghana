@@ -88,3 +88,17 @@ export const BOG_REGULATION_INFO = {
   maxAprNotice: 'Maximum Annual Percentage Rate (APR): 36% - 54% p.a. Repayment periods range from 61 to 180 days.',
   dataProtectionNotice: 'Registered with the Data Protection Commission (DPC) of Ghana under Act 843.',
 };
+
+export const GHANA_BANKS = [
+  { id: 'gcb', name: 'GCB Bank PLC', sortCode: '040101', code: 'GCB' },
+  { id: 'ecobank', name: 'Ecobank Ghana Ltd', sortCode: '130101', code: 'ECO' },
+  { id: 'absa', name: 'Absa Bank Ghana', sortCode: '030101', code: 'ABSA' },
+  { id: 'stanbic', name: 'Stanbic Bank Ghana', sortCode: '190101', code: 'STAN' },
+  { id: 'fidelity', name: 'Fidelity Bank Ghana', sortCode: '240101', code: 'FID' },
+  { id: 'calbank', name: 'CalBank PLC', sortCode: '140101', code: 'CAL' },
+  { id: 'zenith', name: 'Zenith Bank Ghana', sortCode: '120101', code: 'ZEN' },
+  { id: 'cbg', name: 'Consolidated Bank Ghana (CBG)', sortCode: '340101', code: 'CBG' },
+  { id: 'stanchart', name: 'Standard Chartered Bank Ghana', sortCode: '020101', code: 'SCB' },
+  { id: 'access', name: 'Access Bank Ghana', sortCode: '280101', code: 'ACC' },
+];
+

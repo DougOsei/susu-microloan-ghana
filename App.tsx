@@ -25,6 +25,7 @@ import {
   SavingsProduct,
   ActiveLoan,
   TransactionRecord,
+  BankAccount,
 } from './src/types';
 
 // Screens
@@ -33,6 +34,7 @@ import { SavingsScreen } from './src/screens/SavingsScreen';
 import { LoansScreen } from './src/screens/LoansScreen';
 import { TransferScreen } from './src/screens/TransferScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
+import { AuthScreen } from './src/screens/AuthScreen';
 
 // Modals
 import { MoMoSelectorModal } from './src/components/MoMoSelectorModal';
@@ -40,10 +42,12 @@ import { LoanCalculatorModal } from './src/components/LoanCalculatorModal';
 import { SavingsGoalModal } from './src/components/SavingsGoalModal';
 import { GhanaCardKycModal } from './src/components/GhanaCardKycModal';
 import { TransactionReceiptModal } from './src/components/TransactionReceiptModal';
+import { AddBankAccountModal } from './src/components/AddBankAccountModal';
 
 type TabType = 'home' | 'savings' | 'loans' | 'transfers' | 'profile';
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   const [currentTab, setCurrentTab] = useState<TabType>('home');
 
   // Core App State
@@ -59,7 +63,42 @@ export default function App() {
   const [loanModalVisible, setLoanModalVisible] = useState(false);
   const [savingsModalVisible, setSavingsModalVisible] = useState(false);
   const [kycModalVisible, setKycModalVisible] = useState(false);
+  const [bankModalVisible, setBankModalVisible] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState<TransactionRecord | null>(null);
+
+  // Auth Handlers
+  const handleLoginSuccess = (newUser: UserProfile, isNewUser?: boolean) => {
+    setUser(newUser);
+    if (isNewUser) {
+      setBalances({
+        availableBalance: 50.0, // Welcome credit
+        totalSavings: 0.0,
+        activeLoanDebt: 0.0,
+        totalInterestEarned: 0.0,
+      });
+      setSavingsGoals([]);
+      setActiveLoans([]);
+      setTransactions([
+        {
+          id: `tx_welcome_${Date.now()}`,
+          type: 'interest_credited',
+          title: 'Welcome Bonus Credited',
+          description: 'New account activation reward',
+          amount: 50.0,
+          currency: 'GH₵',
+          date: 'Just now',
+          status: 'completed',
+          reference: `QS-BONUS-GH-${Math.floor(1000 + Math.random() * 9000)}`,
+        },
+      ]);
+    }
+    setIsAuthenticated(true);
+    setCurrentTab('home');
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+  };
 
   // Handlers for MoMo
   const handleOpenDeposit = () => {
@@ -106,7 +145,7 @@ export default function App() {
           'plain-text',
           '50'
         )
-      : applyTopUp(goal, 100); // fallback for platforms without Alert.prompt
+      : applyTopUp(goal, 100);
   };
 
   const applyTopUp = (goal: SavingsProduct, amount: number) => {
@@ -200,7 +239,6 @@ export default function App() {
       activeLoanDebt: Math.max(0, prev.activeLoanDebt - payAmount),
     }));
 
-    // Reward on-time repayment with credit score boost!
     setUser((prev) => ({
       ...prev,
       creditScore: Math.min(850, prev.creditScore + 15),
@@ -238,6 +276,24 @@ export default function App() {
     setTransactions((prev) => [tx, ...prev]);
     setSelectedReceipt(tx);
   };
+
+  // Handler for Bank Account Linking
+  const handleBankAccountAdded = (newAccount: BankAccount) => {
+    setUser((prev) => ({
+      ...prev,
+      bankAccounts: [newAccount, ...(prev.bankAccounts || [])],
+    }));
+  };
+
+  // If user is not logged in, render the Auth / Registration Screen
+  if (!isAuthenticated) {
+    return (
+      <SafeAreaView style={styles.rootContainer}>
+        <StatusBar style="dark" />
+        <AuthScreen onLoginSuccess={handleLoginSuccess} />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.rootContainer}>
@@ -296,7 +352,9 @@ export default function App() {
           <ProfileScreen
             user={user}
             onOpenKycModal={() => setKycModalVisible(true)}
+            onOpenAddBankModal={() => setBankModalVisible(true)}
             onUpdateUser={(updated) => setUser(updated)}
+            onLogout={handleLogout}
           />
         )}
       </View>
@@ -399,6 +457,13 @@ export default function App() {
         user={user}
         onClose={() => setKycModalVisible(false)}
         onKycVerified={(updated) => setUser(updated)}
+      />
+
+      <AddBankAccountModal
+        visible={bankModalVisible}
+        defaultHolderName={user.fullName}
+        onClose={() => setBankModalVisible(false)}
+        onBankAccountAdded={handleBankAccountAdded}
       />
 
       <TransactionReceiptModal
