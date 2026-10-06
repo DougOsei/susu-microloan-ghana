@@ -33,6 +33,7 @@ interface HomeScreenProps {
   onSelectTransaction: (tx: TransactionRecord) => void;
   onRepayLoan: (loan: ActiveLoan) => void;
   onNavigateTab: (tab: 'savings' | 'loans' | 'transfers' | 'profile') => void;
+  onLogout?: () => void;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -49,6 +50,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onSelectTransaction,
   onRepayLoan,
   onNavigateTab,
+  onLogout,
 }) => {
   const activeLoan = activeLoans.find((l) => l.status === 'active');
 
@@ -59,6 +61,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         user={user}
         onPressProfile={() => onNavigateTab('profile')}
         onPressKyc={onOpenKycModal}
+        onLogout={onLogout}
       />
 
       {/* Main Virtual Wallet Card */}

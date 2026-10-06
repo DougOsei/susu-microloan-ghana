@@ -316,6 +316,7 @@ export default function App() {
             onSelectTransaction={(tx) => setSelectedReceipt(tx)}
             onRepayLoan={handleRepayLoan}
             onNavigateTab={(tab) => setCurrentTab(tab)}
+            onLogout={handleLogout}
           />
         )}
 

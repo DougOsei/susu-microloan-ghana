@@ -8,9 +8,10 @@ interface HeaderProps {
   user: UserProfile;
   onPressProfile: () => void;
   onPressKyc: () => void;
+  onLogout?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ user, onPressProfile, onPressKyc }) => {
+export const Header: React.FC<HeaderProps> = ({ user, onPressProfile, onPressKyc, onLogout }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.userSection} onPress={onPressProfile} activeOpacity={0.8}>
@@ -43,9 +44,18 @@ export const Header: React.FC<HeaderProps> = ({ user, onPressProfile, onPressKyc
 
       <View style={styles.actionSection}>
         <TouchableOpacity style={styles.iconButton} onPress={onPressProfile} activeOpacity={0.7}>
-          <Ionicons name="notifications-outline" size={22} color={COLORS.textPrimary} />
+          <Ionicons name="notifications-outline" size={20} color={COLORS.textPrimary} />
           <View style={styles.notificationDot} />
         </TouchableOpacity>
+        {onLogout && (
+          <TouchableOpacity
+            style={[styles.iconButton, { marginLeft: 8 }]}
+            onPress={onLogout}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="log-out-outline" size={20} color={COLORS.danger} />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

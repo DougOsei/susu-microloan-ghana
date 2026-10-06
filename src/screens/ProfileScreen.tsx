@@ -32,6 +32,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   const [smsAlerts, setSmsAlerts] = useState(true);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -258,16 +259,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
       <View style={styles.section}>
         <TouchableOpacity
           style={styles.logoutBtn}
-          onPress={() => {
-            Alert.alert(
-              'Log Out',
-              'Are you sure you want to sign out? You will be returned to the account registration screen.',
-              [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Log Out', style: 'destructive', onPress: onLogout },
-              ]
-            );
-          }}
+          onPress={() => setShowLogoutModal(true)}
           activeOpacity={0.8}
         >
           <Ionicons name="log-out-outline" size={18} color={COLORS.danger} />
@@ -336,6 +328,40 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                 • Borrower funds in Susu accounts are ring-fenced and insured under the Ghana Deposit Protection Scheme.
               </Text>
             </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Log Out Confirmation In-App Modal */}
+      <Modal visible={showLogoutModal} animationType="fade" transparent onRequestClose={() => setShowLogoutModal(false)}>
+        <View style={styles.confirmModalOverlay}>
+          <View style={[styles.confirmModalCard, SHADOWS.lg]}>
+            <View style={styles.confirmIconCircle}>
+              <Ionicons name="log-out-outline" size={34} color={COLORS.danger} />
+            </View>
+            <Text style={styles.confirmTitle}>Sign Out of QuickSave?</Text>
+            <Text style={styles.confirmSub}>
+              You will be returned to the account registration and sign-in screen. You can sign in anytime or create a new account.
+            </Text>
+            <View style={styles.confirmActionRow}>
+              <TouchableOpacity
+                style={styles.confirmCancelBtn}
+                onPress={() => setShowLogoutModal(false)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.confirmCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.confirmLogoutBtn}
+                onPress={() => {
+                  setShowLogoutModal(false);
+                  onLogout();
+                }}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.confirmLogoutText}>Log Out Now</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -574,5 +600,70 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.textSecondary,
     lineHeight: 18,
+  },
+  confirmModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  confirmModalCard: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 24,
+    alignItems: 'center',
+  },
+  confirmIconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#FEE2E2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 14,
+  },
+  confirmTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: COLORS.textPrimary,
+    marginBottom: 6,
+  },
+  confirmSub: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    lineHeight: 18,
+    marginBottom: 20,
+  },
+  confirmActionRow: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+  },
+  confirmCancelBtn: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: '#F1F5F9',
+    alignItems: 'center',
+  },
+  confirmCancelText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: COLORS.textSecondary,
+  },
+  confirmLogoutBtn: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: COLORS.danger,
+    alignItems: 'center',
+  },
+  confirmLogoutText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });
