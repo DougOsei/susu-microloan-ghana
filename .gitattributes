@@ -1,0 +1,18 @@
+# Auto detect text files and normalize line endings
+* text=auto eol=lf
+
+# Explicit syntax for Windows scripts
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.aab binary
+*.apk binary

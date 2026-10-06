@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "QuickSave Ghana: MoMo Savings & Loans",
+    "slug": "quicksave-ghana",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0D533A"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.quicksave.ghana"
+    },
+    "android": {
+      "package": "com.quicksave.ghana",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0D533A"
+      },
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "VIBRATE",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "appName": "QuickSave Ghana",
+      "currency": "GHS",
+      "currencySymbol": "GH₵",
+      "country": "Ghana",
+      "countryCode": "+233",
+      "regulatoryNotice": "Licensed by Bank of Ghana as Tier-3 Microfinance & Digital Credit Provider",
+      "eas": {
+        "projectId": "quicksave-ghana-mobile"
+      }
+    },
+    "plugins": [
+      "expo-status-bar"
+    ]
+  }
+}

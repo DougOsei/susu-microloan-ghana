@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+package-lock.json.bak
+
+# Expo and Bundler
+.expo/
+dist/
+web-build/
+
+# Native and Build artifacts
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro cache
+.metro-health-check*
+
+# Environment and secrets
+.env
+.env.local
+.env*.local
+
+# Debug and System logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# OS Generated
+.DS_Store
+Thumbs.db
+[Ee]xpress/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary directories
+scratch/
+tmp/
+temp/
