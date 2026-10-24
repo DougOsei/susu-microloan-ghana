@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum KycTier {
+  TIER_0
+  TIER_1
+  TIER_2
+  TIER_3
+}
+
+enum AccountType {
+  WALLET
+  SUSU_VAULT
+  LOAN_PRINCIPAL
+  FEES_RECEIVABLE
+  PAYMENT_GATEWAY_CLEARING
+  ESCROW
+}
+
+enum PostingDirection {
+  DEBIT
+  CREDIT
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  SUSU_CONTRIBUTION
+  SUSU_PAYOUT
+  LOAN_DISBURSEMENT
+  LOAN_REPAYMENT
+  FEE_ASSESSMENT
+  TRANSFER
+}
+
+enum SusuPlanType {
+  DAILY_SUSU
+  SAFELOCK
+  EMERGENCY_POT
+}
+
+enum SusuStatus {
+  ACTIVE
+  MATURED
+  LIQUIDATED
+  CANCELLED
+}
+
+enum LoanStatus {
+  PENDING
+  APPROVED
+  DISBURSED
+  REPAID
+  DEFAULTED
+}
+
+enum RepaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+model User {
+  id                String       @id @default(uuid())
+  phone             String       @unique
+  fullName          String
+  email             String?      @unique
+  pinHash           String
+  kycTier           KycTier      @default(TIER_1)
+  ghanaCardNumber   String?      @unique
+  ghanaCardVerified Boolean      @default(false)
+  biometricEnabled  Boolean      @default(false)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  accounts          Account[]
+  susuPlans         SusuPlan[]
+  loans             Loan[]
+  bankAccounts      BankAccount[]
+}
+
+model Account {
+  id             String           @id @default(uuid())
+  userId         String?
+  accountType    AccountType
+  currency       String           @default("GHS")
+  balancePesewas BigInt           @default(0)
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  user           User?            @relation(fields: [userId], references: [id])
+  postings       LedgerPosting[]
+
+  @@index([userId, accountType])
+}
+
+model JournalEntry {
+  id              String           @id @default(uuid())
+  reference       String           @unique
+  description     String
+  transactionType TransactionType
+  createdAt       DateTime         @default(now())
+
+  postings        LedgerPosting[]
+}
+
+model LedgerPosting {
+  id             String           @id @default(uuid())
+  journalEntryId String
+  accountId      String
+  amountPesewas  BigInt
+  direction      PostingDirection
+  createdAt      DateTime         @default(now())
+
+  journalEntry   JournalEntry     @relation(fields: [journalEntryId], references: [id])
+  account        Account          @relation(fields: [accountId], references: [id])
+
+  @@index([journalEntryId])
+  @@index([accountId])
+}
+
+model SusuPlan {
+  id                       String       @id @default(uuid())
+  userId                   String
+  planType                 SusuPlanType
+  title                    String
+  targetAmountPesewas      BigInt
+  currentAmountPesewas     BigInt       @default(0)
+  dailyContributionPesewas BigInt       @default(0)
+  accruedYieldPesewas      BigInt       @default(0)
+  annualYieldRate          Float        @default(0.12)
+  maturityDate             DateTime
+  status                   SusuStatus   @default(ACTIVE)
+  createdAt                DateTime     @default(now())
+  updatedAt                DateTime     @updatedAt
+
+  user                     User         @relation(fields: [userId], references: [id])
+
+  @@index([userId, status])
+}
+
+model Loan {
+  id                    String              @id @default(uuid())
+  userId                String
+  principalPesewas      BigInt
+  interestRateBps       Int                 // e.g. 380 = 3.8%
+  processingFeePesewas  BigInt
+  tenureDays            Int
+  totalPayablePesewas   BigInt
+  balanceRemainingPesewas BigInt
+  status                LoanStatus          @default(PENDING)
+  aprDisclosed          Float               // Statutory APR under Act 1052
+  approvedAt            DateTime?
+  disbursedAt           DateTime?
+  dueAt                 DateTime
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  user                  User                @relation(fields: [userId], references: [id])
+  repayments            RepaymentSchedule[]
+
+  @@index([userId, status])
+}
+
+model RepaymentSchedule {
+  id                String          @id @default(uuid())
+  loanId            String
+  installmentNumber Int
+  dueDate           DateTime
+  principalPesewas  BigInt
+  interestPesewas   BigInt
+  status            RepaymentStatus @default(PENDING)
+  paidAt            DateTime?
+
+  loan              Loan            @relation(fields: [loanId], references: [id])
+
+  @@index([loanId])
+}
+
+model BankAccount {
+  id                String          @id @default(uuid())
+  userId            String
+  bankName          String
+  bankCode          String
+  accountNumber     String
+  accountHolderName String
+  isVerified        Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+
+  user              User            @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}

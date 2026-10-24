@@ -2,6 +2,12 @@
 node_modules/
 package-lock.json.bak
 
+# Next.js Build
+.next/
+out/
+build/
+*.tsbuildinfo
+
 # Expo and Bundler
 .expo/
 dist/
